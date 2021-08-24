@@ -33,56 +33,48 @@ class CustomTVCell: UITableViewCell {
     }
     
     func addTaskCell(taskData: TaskData) {
+        //右端の日
+        let rightEndDate = calendar.date(byAdding: .day, value: 3, to: leftEndDate!)!
+        //生成するタスクの幅
+        var taskWidth: CGFloat = 0
         //左と右を丸角にするかどうか
         var leftCornerRounded = false
         var rightCornerRounded = false
-        //生成するタスクの幅
-        var taskWidth: CGFloat = 0
-        //左端の日を基準とした日
-        var dateFromLeftEnd = leftEndDate!
-        //右端の日
-        let rightEndDate = calendar.date(byAdding: .day, value: 3, to: dateFromLeftEnd)!
+        
+        
         //左端の日から数えたタスクが始まる日
         var start = 0
+        //タスクの全体を辿るためのインデックス
+        var indexDate = leftEndDate!
         //タスクの開始日がテーブルに表示される期間内にあるか
-        if dateFromLeftEnd <= taskData.startDate && taskData.startDate <= rightEndDate {
-            leftCornerRounded = true
-            start = calendar.dateComponents([.day], from: dateFromLeftEnd, to: taskData.startDate).day!
-            //dateFromLeftEndをスタートに合わせる
-            dateFromLeftEnd = taskData.startDate
-            //タスクの開始日がテーブルに表示される期間より遅いか
-        } else if rightEndDate < taskData.startDate {
-            return
+        if let l = leftEndDate {
+            if l <= taskData.startDate && taskData.startDate <= rightEndDate {
+                leftCornerRounded = true
+                //タスクが始まる日に合わせる
+                start = calendar.dateComponents([.day], from: l, to: taskData.startDate).day!
+                //タスクが始まる日に合わせる
+                indexDate = taskData.startDate
+                //タスクの開始日がテーブルに表示される期間より遅いか
+            } else if rightEndDate < taskData.startDate {
+                return
+            }
         }
         
-        //pathの座標設定はaddViewを基準にしているので
-        var lastExtendGoal = 0//延長矢印のゴール
-        
         //タスク終了まで幅の大きさを測る
-        for i in start...3 {
-            if dateFromLeftEnd < taskData.completeDate {
+        for _ in start...3 {
+            if indexDate < taskData.completeDate {
                 taskWidth += self.frame.width/4
-            } else if dateFromLeftEnd == taskData.completeDate {
+            } else if indexDate == taskData.completeDate {
                 taskWidth += self.frame.width/4
                 rightCornerRounded = true
                 break
             }
             //ExtendHistoryと同じDateが出現した場合、StartからこのDateの右端まで横線を、このDateの右端に縦線を入れる
-            
-            
-            dateFromLeftEnd = calendar.date(byAdding: .day, value: 1, to: dateFromLeftEnd)!
+            indexDate = calendar.date(byAdding: .day, value: 1, to: indexDate)!
         }
         
-        
-        
-        //path.close()
-        
-        
-        
-        //UIViewを作り、挿入
-        //親ビュー(CustomTVCell)のx,y座標を0としてRectを決める
         let path = UIBezierPath()//ベジエパスクラス
-        
+        //UIViewを作り、挿入,親ビュー(CustomTVCell)のx,y座標を0としてRectを決める
         let addView = TaskView(frame: CGRect(x: CGFloat(start) * (self.frame.width/4), y: CGFloat(0), width: taskWidth, height: self.frame.height),task: taskData,path: path)
         
         /*
@@ -93,53 +85,35 @@ class CustomTVCell: UITableViewCell {
         
         
         let originX = addView.frame.origin.x
-        var dateFromLeftEnd2 = leftEndDate!
-        dateFromLeftEnd2 = calendar.date(byAdding: .day, value: start, to: dateFromLeftEnd2)!
+        //2つ目のインデックス
+        var indexDate2 = leftEndDate!
+        indexDate2 = calendar.date(byAdding: .day, value: start, to: indexDate2)!
+        var lastExtendGoal = start
         
-        var lastExtendGoal2 = start
         if let exDates = taskData.extendHistory {
             for i in start...3 {
-                
-                print(exDates,dateFromLeftEnd2)
-                if exDates.contains(dateFromLeftEnd2) {
+                if exDates.contains(indexDate2) {
                     //startからこのDateの右端まで横線
                     //スタートの代わりの変数を用意して前の縦線を引いたDateを保存する。次延長日時が見つかった時、この縦線の隣から横線を引く
-                    path.move(to: CGPoint(x: CGFloat(lastExtendGoal2) * self.frame.width/4 - originX, y: addView.frame.midY))
+                    path.move(to: CGPoint(x: CGFloat(lastExtendGoal) * self.frame.width/4 - originX, y: addView.frame.midY))
                     path.addLine(to: CGPoint(x: CGFloat(i + 1) * self.frame.width/4 - originX, y: addView.frame.midY))
-                    print(lastExtendGoal2)
                     //縦線を引く
                      path.move(to: CGPoint(x: CGFloat(i + 1) * self.frame.width/4 - originX, y: addView.frame.minY))
                      path.addLine(to: CGPoint(x: CGFloat(i + 1) * self.frame.width/4 - originX, y: addView.frame.maxY))
-                    lastExtendGoal2 = i + 1
-                    
+                    lastExtendGoal = i + 1
                 }
-                dateFromLeftEnd2 = calendar.date(byAdding: .day, value: 1, to: dateFromLeftEnd2)!
+                indexDate2 = calendar.date(byAdding: .day, value: 1, to: indexDate2)!
+            }
+            //表示している4日よりも大きい日が出た時
+            if exDates.contains(where: {(element) -> Bool in return rightEndDate < element } ) {
+                //タスク終わりまで横線を引く
+                path.move(to: CGPoint(x: CGFloat(lastExtendGoal) * self.frame.width/4 - originX, y: addView.frame.midY))
+                path.addLine(to: CGPoint(x: addView.frame.maxX, y: addView.frame.midY))
             }
         }
         
-        if let exDates = taskData.extendHistory {
-            if !exDates.contains(rightEndDate) {
-                for d in exDates {
-                    if rightEndDate < d {
-                        //タスク終わりまで横線を引く
-                        path.move(to: CGPoint(x: CGFloat(lastExtendGoal) * self.frame.width/4, y: addView.frame.minY))
-                        path.addLine(to: CGPoint(x: self.frame.width, y: addView.frame.maxY))
-                        break
-                    }
-                }
-            }
-        }
-        
-        
-        if !leftCornerRounded && rightCornerRounded {
-            addView.layer.cornerRadius = 15
-            addView.layer.maskedCorners = [.layerMaxXMaxYCorner, .layerMaxXMinYCorner]
-        } else if leftCornerRounded && !rightCornerRounded {
-            addView.layer.cornerRadius = 15
-            addView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMinXMaxYCorner]
-        } else if leftCornerRounded && rightCornerRounded {
-            addView.layer.cornerRadius = 15
-        }
+        //角丸化
+        addView.cornerRadius(leftCornerRounded: leftCornerRounded, rightCornerRounded: rightCornerRounded)
         
         addView.backgroundColor = UIColor.red
         addView.alpha = 0.6

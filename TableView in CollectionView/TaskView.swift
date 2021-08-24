@@ -43,5 +43,20 @@ class TaskView: UIView {
         pa.stroke()
         print(pa)*/
     }
+    
+    func cornerRadius(leftCornerRounded: Bool,rightCornerRounded: Bool) {
+        //何の意味があるか調べておく
+        self.clipsToBounds = true
+        if !leftCornerRounded && rightCornerRounded {
+            self.layer.cornerRadius = 15
+            self.layer.maskedCorners = [.layerMaxXMaxYCorner, .layerMaxXMinYCorner]
+        } else if leftCornerRounded && !rightCornerRounded {
+            self.layer.cornerRadius = 15
+            self.layer.maskedCorners = [.layerMinXMinYCorner, .layerMinXMaxYCorner]
+        } else if leftCornerRounded && rightCornerRounded {
+            self.layer.cornerRadius = 15
+        }
+        
+    }
 
 }
