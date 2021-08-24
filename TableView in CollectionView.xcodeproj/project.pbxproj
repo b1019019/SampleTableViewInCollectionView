@@ -17,6 +17,7 @@
 		3A059FC126C6BF31005D67FC /* CustomCVCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3A059FBF26C6BF31005D67FC /* CustomCVCell.xib */; };
 		3A059FC426C6C335005D67FC /* CustomTVCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A059FC226C6C335005D67FC /* CustomTVCell.swift */; };
 		3A059FC526C6C335005D67FC /* CustomTVCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3A059FC326C6C335005D67FC /* CustomTVCell.xib */; };
+		3A059FF126D3428B005D67FC /* TaskView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A059FF026D3428B005D67FC /* TaskView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -32,6 +33,7 @@
 		3A059FBF26C6BF31005D67FC /* CustomCVCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CustomCVCell.xib; sourceTree = "<group>"; };
 		3A059FC226C6C335005D67FC /* CustomTVCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTVCell.swift; sourceTree = "<group>"; };
 		3A059FC326C6C335005D67FC /* CustomTVCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CustomTVCell.xib; sourceTree = "<group>"; };
+		3A059FF026D3428B005D67FC /* TaskView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -70,6 +72,7 @@
 				3A059FBE26C6BF31005D67FC /* CustomCVCell.swift */,
 				3A059FBF26C6BF31005D67FC /* CustomCVCell.xib */,
 				3A059FC226C6C335005D67FC /* CustomTVCell.swift */,
+				3A059FF026D3428B005D67FC /* TaskView.swift */,
 				3A059FC326C6C335005D67FC /* CustomTVCell.xib */,
 				3A059FB026C6B831005D67FC /* Main.storyboard */,
 				3A059FB326C6B832005D67FC /* Assets.xcassets */,
@@ -154,6 +157,7 @@
 				3A059FC426C6C335005D67FC /* CustomTVCell.swift in Sources */,
 				3A059FAF26C6B831005D67FC /* ViewController.swift in Sources */,
 				3A059FC026C6BF31005D67FC /* CustomCVCell.swift in Sources */,
+				3A059FF126D3428B005D67FC /* TaskView.swift in Sources */,
 				3A059FAB26C6B831005D67FC /* AppDelegate.swift in Sources */,
 				3A059FAD26C6B831005D67FC /* SceneDelegate.swift in Sources */,
 			);

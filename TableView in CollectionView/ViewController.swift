@@ -7,11 +7,85 @@
 
 import UIKit
 
-var data = [["yamada","20","gyoza","erogoPlaxy"],
-            ["hajime","23","karubo","chihaya"],
-            ["nozo","23","onigiri","eva"],
-            ["ebi","20","kimuti","initialD"],
-            ["wasabi","26","apple","eureka7"]]
+struct MyDate {
+    var year: Int
+    var month: Int
+    var day: Int
+    init(year: Int,month: Int,day: Int) {
+        self.year = year
+        self.month = month
+        self.day = day
+    }
+}
+
+let calendar = Calendar(identifier: .gregorian)
+
+class TaskData {
+    var title: String
+    var memo: String
+    var startDate: Date
+    var completeDate: Date
+    var status: Int//0：取組み中 1：完了 2：諦め
+    var nextTask: TaskData?
+    var branchTask: [TaskData]?
+    var extendHistory: [Date]?//延長前の完了予定日を格納していく
+    
+    init(title: String,memo: String,startYear: Int, startMonth: Int,startDay: Int,completeYear: Int,completeMonth: Int , completeDay: Int,status: Int,nextTask: TaskData?,branchTask: [TaskData]?,extendHistory: [Date]?){
+        self.title = title
+        self.memo = memo
+        self.startDate = calendar.date(from: DateComponents(year: startYear, month: startMonth, day: startDay))!
+        self.completeDate = calendar.date(from: DateComponents(year: completeYear, month: completeMonth, day: completeDay))!
+        self.status = status
+        self.nextTask = nextTask
+        self.branchTask = branchTask
+        self.extendHistory = extendHistory
+    }
+}
+var data = [
+    [
+        ["0つ目","1","1","1"],
+        ["1","1","1","1"],
+        ["1","1","1","1"],
+        ["1","1","1","1"]
+    ],
+    [
+        ["1つ目","1","1","1"],
+        ["1","1","1","1"],
+        ["1","1","1","1"],
+        ["1","1","1","1"]
+    ],
+    [
+        ["2つ目","1","1","1"],
+        ["1","1","1","1"],
+        ["1","1","1","1"],
+        ["1","1","1","1"]
+    ],
+    [
+        ["3つ目","1","1","1"],
+        ["1","1","1","1"],
+        ["1","1","1","1"],
+        ["1","1","1","1"]
+    ],
+    [
+        ["4つ目","1","1","1"],
+        ["1","1","1","1"],
+        ["1","1","1","1"],
+        ["1","1","1","1"]
+    ]
+]
+
+var branchTask = [TaskData(title: "延長", memo: "えびです", startYear: 2021, startMonth: 8, startDay: 21, completeYear: 2021, completeMonth: 8, completeDay: 30, status: 0, nextTask: nil, branchTask: [], extendHistory: nil)]
+
+
+var taskDataArray: [TaskData] = [
+    TaskData(title: "21日からの予定", memo: "えびです", startYear: 2021, startMonth: 8, startDay: 21, completeYear: 2021, completeMonth: 8, completeDay: 23, status: 1, nextTask: nil, branchTask: nil, extendHistory: nil),
+    TaskData(title: "21日からの予定２", memo: "えびです", startYear: 2021, startMonth: 8, startDay: 21, completeYear: 2021, completeMonth: 8, completeDay: 30, status: 2, nextTask: nil, branchTask: nil, extendHistory: nil),
+    //延長つき
+    TaskData(title: "22日からの予定", memo: "えびです", startYear: 2021, startMonth: 8, startDay: 22, completeYear: 2021, completeMonth: 8, completeDay: 24, status: 0, nextTask: nil, branchTask: [], extendHistory: [calendar.date(from: DateComponents(year: 2021, month: 8, day: 23))!])
+    
+]
+
+var positionInData = 2
 
 class ViewController: UIViewController {
     
@@ -24,6 +98,8 @@ class ViewController: UIViewController {
         
         //セル同士の間隔を設定
         collectionViewFlowLayout.minimumLineSpacing = 0
+        //ページングスクロール
+        collectionView.isPagingEnabled = true
         
         
         //nibNameはxibファイル名が入る
@@ -32,8 +108,8 @@ class ViewController: UIViewController {
         collectionView.register(nib, forCellWithReuseIdentifier: "collectionViewCell")
         
         /*
-        NotificationCenter.default.addObserver(self, selector: #selector(receiveScrollNotification(notification:)), name: .tableScroll, object: nil)
-        */
+         NotificationCenter.default.addObserver(self, selector: #selector(receiveScrollNotification(notification:)), name: .tableScroll, object: nil)
+         */
     }
     
     //collectionViewなどの描画が終わってから処理される
@@ -45,20 +121,60 @@ class ViewController: UIViewController {
         collectionView.scrollToItem(at: IndexPath(row: 2, section: 0), at: UICollectionView.ScrollPosition.centeredHorizontally, animated: false)
         
     }
+    //左に向かってスクロール(右にデータが増える)
+    func leftScrollDataReload() {
+        positionInData += 1
+        let addData = [
+            ["\(positionInData+2)つ目","1","1","1"],
+            ["right","1","1","1"],
+            ["1","1","1","1"],
+            ["1","1","1","1"]
+        ]
+        data.removeFirst()
+        data.append(addData)
+    }
+    
+    //右に向かってスクロール(左にデータが増える)
+    func rightScrollDataReload() {
+        positionInData -= 1
+        let addData = [
+            ["\(positionInData-2)つ目","1","1","1"],
+            ["left","1","1","1"],
+            ["1","1","1","1"],
+            ["1","1","1","1"]
+        ]
+        data.removeLast()
+        data.insert(addData, at: 0)
+    }
     
 }
 
 extension ViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return data[0].count
+        //return data[0].count
+        return taskDataArray.count
+    }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 90
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "tableViewCell", for: indexPath) as! CustomTVCell
         
-        if !(tableView.tag == 1 && indexPath.row == 1){
-            cell.textLabel?.text = data[tableView.tag][indexPath.row]
-        }
+        //cell.label1.text = data[tableView.tag][0][indexPath.row]
+        //cell.label2.text = data[tableView.tag][1][indexPath.row]
+        //cell.label3.text = data[tableView.tag][2][indexPath.row]
+        //cell.label4.text = data[tableView.tag][3][indexPath.row]
+        
+        cell.addTaskCell(taskData: taskDataArray[indexPath.row])
+        
+        /*
+         if !(tableView.tag == 1 && indexPath.row == 1){
+         cell.textLabel?.text = data[tableView.tag][indexPath.row]
+         
+         }
+         */
         return cell
     }
     
@@ -70,7 +186,7 @@ extension ViewController: UITableViewDataSource, UITableViewDelegate {
 extension ViewController: UICollectionViewDataSource, UICollectionViewDelegate,UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return data[0].count
+        return data.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -81,14 +197,58 @@ extension ViewController: UICollectionViewDataSource, UICollectionViewDelegate,U
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let size = CGSize(width: collectionView.frame.width / 3, height: collectionView.frame.height)
+        //コレクションビューと同サイズに設定
+        let size = CGSize(width: collectionView.frame.width, height: collectionView.frame.height)
         return size
     }
 }
 
 extension ViewController {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        
+        //let currentOffsetX = scrollView.contentOffset.x//スクロールできる限度の底を基準にどのくらいスクロールしているか
+        //let maximumOffset = scrollView.contentSize.width / 2 - scrollView.frame.width / 2//スクロールできる限度。スクロールする中身のビューの幅 - テーブルびゅー自体の幅
+        //let distanceToBottom = maximumOffset - currentOffsetX
+        
+        //contentの右側に40の余白ができる
+        let contentCenter = (scrollView.contentSize.width - 40) / 2
+        
+        let currentCenter = scrollView.contentOffset.x + (scrollView.frame.width / 2)
+        
+        let positionFromCenter = contentCenter - currentCenter
+        
+        //print("\(contentCenter),\(currentCenter),\(positionFromCenter)")
+        //print("ddddd\(scrollView.contentOffset.x),\(scrollView.frame.width),\(scrollView.contentSize.width)")
+        //次のコレクションセルのテーブルビューの中心に移動したら
+        //右にスライド(左の画面に移動)
+        //print("\(data[0][0][0]),\(data[1][0][0]),\(data[2][0][0]),\(data[3][0][0]),\(data[4][0][0])")
+        
         //スクロール時にNotificationCenterに通知を送る。scrollViewも送る。
         NotificationCenter.default.post(name: .scrollTableView, object: scrollView)
+        
+        
+        //右にスライド(左画面に移動)
+        if scrollView.frame.width - 5 < positionFromCenter {
+            
+            rightScrollDataReload()
+            collectionView.reloadData()
+            print("reloadLeft")
+            
+            //中央に戻る
+            collectionView.scrollToItem(at: IndexPath(row: 2, section: 0), at: UICollectionView.ScrollPosition.centeredHorizontally, animated: false)
+            
+            //左にスライド(右の画面に移動)
+        } else if positionFromCenter < -scrollView.frame.width + 5 {
+            
+            leftScrollDataReload()
+            collectionView.reloadData()
+            print("reloadRight")
+            
+            //中央に戻る
+            collectionView.scrollToItem(at: IndexPath(row: 2, section: 0), at: UICollectionView.ScrollPosition.centeredHorizontally, animated: false)
+            
+        }
+        
+        
     }
 }
