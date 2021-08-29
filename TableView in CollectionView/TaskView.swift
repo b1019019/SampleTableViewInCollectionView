@@ -29,6 +29,37 @@ class TaskView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
+    func horizontalConnect() {
+        path?.addArc(withCenter: CGPoint(x: bounds.minX + 10, y: bounds.midY), radius: 2, startAngle: 0, endAngle: .pi * 2, clockwise: true)
+        path?.move(to: CGPoint(x: bounds.minX + 10, y: bounds.midY))
+        path?.addLine(to: CGPoint(x: bounds.minX, y: bounds.midY))
+    }
+    
+    func upConnect() {
+        path?.addArc(withCenter: CGPoint(x: bounds.minX + 10, y: bounds.midY), radius: 2, startAngle: 0, endAngle: .pi * 2, clockwise: true)
+        path?.move(to: CGPoint(x: bounds.minX + 10, y: bounds.midY))
+        path?.addLine(to: CGPoint(x: bounds.minX + 10, y: bounds.minY))
+    }
+    
+    func downConnect() {
+        path?.addArc(withCenter: CGPoint(x: bounds.minX + 10, y: bounds.midY), radius: 2, startAngle: 0, endAngle: .pi * 2, clockwise: true)
+        path?.move(to: CGPoint(x: bounds.minX + 10, y: bounds.midY))
+        path?.addLine(to: CGPoint(x: bounds.minX + 10, y: bounds.maxY))
+    }
+    
+    func extendDraw(exStart: CGFloat,exGoal: CGFloat) {
+        path?.move(to: CGPoint(x: exStart, y: bounds.midY))
+        path?.addLine(to: CGPoint(x: exGoal, y: bounds.midY))
+        //縦線を引く
+        path?.move(to: CGPoint(x: exGoal, y: bounds.minY))
+        path?.addLine(to: CGPoint(x: exGoal, y: bounds.maxY))
+    }
+    
+    func horizontalDraw(exStart: CGFloat,exGoal: CGFloat) {
+        path?.move(to: CGPoint(x: exStart, y: bounds.midY))
+        path?.addLine(to: CGPoint(x: exGoal, y: bounds.midY))
+    }
+    
     override func draw(_ rect: CGRect) {
         if let p = path {
             UIColor.gray.setStroke()
@@ -36,6 +67,7 @@ class TaskView: UIView {
                 //print("draw",path)
             p.stroke()
         }
+
         /*let pa = UIBezierPath()
         pa.move(to: CGPoint(x: rect.minX, y: rect.minY))
         pa.addLine(to: CGPoint(x: rect.maxX, y: rect.maxY))

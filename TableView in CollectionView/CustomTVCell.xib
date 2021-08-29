@@ -27,7 +27,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                         </subviews>
-                        <color key="backgroundColor" systemColor="systemOrangeColor"/>
+                        <color key="backgroundColor" red="1" green="0.58431372549019611" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstItem="eUJ-9t-9JF" firstAttribute="centerY" secondItem="awi-4h-5DK" secondAttribute="centerY" id="E9U-UH-lJc"/>
                             <constraint firstItem="eUJ-9t-9JF" firstAttribute="centerX" secondItem="awi-4h-5DK" secondAttribute="centerX" id="fFe-xO-j3g"/>
@@ -43,7 +43,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                         </subviews>
-                        <color key="backgroundColor" systemColor="systemGreenColor"/>
+                        <color key="backgroundColor" red="0.20392156862745098" green="0.7803921568627451" blue="0.34901960784313724" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstItem="dOe-zo-r44" firstAttribute="centerY" secondItem="aAo-R4-wYG" secondAttribute="centerY" id="7tP-Y2-wpk"/>
                             <constraint firstItem="dOe-zo-r44" firstAttribute="centerX" secondItem="aAo-R4-wYG" secondAttribute="centerX" id="vPF-Cr-64P"/>
@@ -59,7 +59,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                         </subviews>
-                        <color key="backgroundColor" systemColor="systemTealColor"/>
+                        <color key="backgroundColor" red="0.35294117647058826" green="0.78431372549019607" blue="0.98039215686274506" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstItem="Zr3-RO-UAy" firstAttribute="centerY" secondItem="JkR-xu-ddW" secondAttribute="centerY" id="hvX-aq-Ils"/>
                             <constraint firstItem="Zr3-RO-UAy" firstAttribute="centerX" secondItem="JkR-xu-ddW" secondAttribute="centerX" id="wnF-At-Ry6"/>
@@ -75,7 +75,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                         </subviews>
-                        <color key="backgroundColor" systemColor="systemYellowColor"/>
+                        <color key="backgroundColor" red="1" green="0.80000000000000004" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstItem="4vM-Yk-NAv" firstAttribute="centerY" secondItem="BR2-Tw-YBw" secondAttribute="centerY" id="QIL-8j-W2B"/>
                             <constraint firstItem="4vM-Yk-NAv" firstAttribute="centerX" secondItem="BR2-Tw-YBw" secondAttribute="centerX" id="d4A-qi-eao"/>
@@ -117,20 +117,8 @@
         </tableViewCell>
     </objects>
     <resources>
-        <systemColor name="systemGreenColor">
-            <color red="0.20392156862745098" green="0.7803921568627451" blue="0.34901960784313724" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </systemColor>
         <systemColor name="systemIndigoColor">
             <color red="0.34509803921568627" green="0.33725490196078434" blue="0.83921568627450982" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </systemColor>
-        <systemColor name="systemOrangeColor">
-            <color red="1" green="0.58431372549019611" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </systemColor>
-        <systemColor name="systemTealColor">
-            <color red="0.35294117647058826" green="0.78431372549019607" blue="0.98039215686274506" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </systemColor>
-        <systemColor name="systemYellowColor">
-            <color red="1" green="0.80000000000000004" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>

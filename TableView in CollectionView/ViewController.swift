@@ -28,6 +28,7 @@ class TaskData {
     var status: Int//0：取組み中 1：完了 2：諦め
     var nextTask: TaskData?
     var branchTask: [TaskData]?
+    var parentTask: TaskData?
     var extendHistory: [Date]?//延長前の完了予定日を格納していく
     
     init(title: String,memo: String,startYear: Int, startMonth: Int,startDay: Int,completeYear: Int,completeMonth: Int , completeDay: Int,status: Int,nextTask: TaskData?,branchTask: [TaskData]?,extendHistory: [Date]?){
@@ -74,14 +75,18 @@ var data = [
     ]
 ]
 
-var branchTask = [TaskData(title: "延長", memo: "えびです", startYear: 2021, startMonth: 8, startDay: 21, completeYear: 2021, completeMonth: 8, completeDay: 30, status: 0, nextTask: nil, branchTask: [], extendHistory: nil)]
+var branch = TaskData(title: "延長", memo: "えびです", startYear: 2021, startMonth: 8, startDay: 23, completeYear: 2021, completeMonth: 8, completeDay: 30, status: 0, nextTask: nil, branchTask:nil, extendHistory: nil)
 
+var branchTask = [branch]
 
 var taskDataArray: [TaskData] = [
     TaskData(title: "21日からの予定", memo: "えびです", startYear: 2021, startMonth: 8, startDay: 21, completeYear: 2021, completeMonth: 8, completeDay: 23, status: 1, nextTask: nil, branchTask: nil, extendHistory: nil),
     TaskData(title: "21日からの予定２", memo: "えびです", startYear: 2021, startMonth: 8, startDay: 21, completeYear: 2021, completeMonth: 8, completeDay: 30, status: 2, nextTask: nil, branchTask: nil, extendHistory: nil),
     //延長つき
-    TaskData(title: "22日からの予定", memo: "えびです", startYear: 2021, startMonth: 8, startDay: 22, completeYear: 2021, completeMonth: 8, completeDay: 25, status: 0, nextTask: nil, branchTask: [], extendHistory: [calendar.date(from: DateComponents(year: 2021, month: 8, day: 23))!, calendar.date(from: DateComponents(year: 2021, month: 8, day: 25))!])
+    TaskData(title: "22日からの予定", memo: "えびです", startYear: 2021, startMonth: 8, startDay: 22, completeYear: 2021, completeMonth: 8, completeDay: 25, status: 0, nextTask: nil, branchTask: [], extendHistory: [calendar.date(from: DateComponents(year: 2021, month: 8, day: 23))!, calendar.date(from: DateComponents(year: 2021, month: 8, day: 25))!]),
+    //分岐タスク付き
+    TaskData(title: "21日からの予定", memo: "分岐タスクメモ", startYear: 2021, startMonth: 8, startDay: 21, completeYear: 2021, completeMonth: 8, completeDay: 23, status: 1, nextTask: nil, branchTask: branchTask, extendHistory: nil),
+    branch
     
 ]
 
@@ -95,6 +100,9 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
+        
+        //
+        branch.parentTask = taskDataArray[3]
         
         //セル同士の間隔を設定
         collectionViewFlowLayout.minimumLineSpacing = 0
@@ -168,7 +176,8 @@ extension ViewController: UITableViewDataSource, UITableViewDelegate {
         //cell.label4.text = data[tableView.tag][3][indexPath.row]
         
         cell.addTaskCell(taskData: taskDataArray[indexPath.row])
-        
+        //cell.test(row: indexPath.row)
+        cell.label1.text = "表示"
         /*
          if !(tableView.tag == 1 && indexPath.row == 1){
          cell.textLabel?.text = data[tableView.tag][indexPath.row]
