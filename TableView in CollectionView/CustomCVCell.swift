@@ -25,13 +25,15 @@ class CustomCVCell: UICollectionViewCell {
     }
     
     @objc func receiveScrollNotification(notification: NSNotification) {
-        guard let scrollView = notification.object as? UIScrollView else {
+        //全てのテーブルビューの高さを合わせる
+        guard let asTableView = notification.object as? UITableView else {
             return
         }
-        
-        if !(scrollView.tag == tableView.tag) {
-        tableView.contentOffset.y = scrollView.contentOffset.y
+        print("高さ合わせ前",tableView.contentOffset.y,tableView.tag,asTableView.tag)
+        if asTableView.tag != tableView.tag {
+            tableView.contentOffset.y = asTableView.contentOffset.y
         }
+        print("高さ合わせ後",tableView.contentOffset.y,tableView.tag,asTableView.tag)
         
     }
     

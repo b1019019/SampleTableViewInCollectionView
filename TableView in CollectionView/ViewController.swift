@@ -73,16 +73,21 @@ var branchTask = [branch]
 
 var nextTask = TaskData(title: "継続タスク子供", memo: "えびです", startYear: 2021, startMonth: 8, startDay: 24, completeYear: 2021, completeMonth: 8, completeDay: 29, status: 2, nextTask: nil, branchTask: nil, extendHistory: nil)
 
-var taskDataArray: [TaskData] = [
+var taskDataArray: [[TaskData]] = [
+    [
     TaskData(title: "21日からの予定", memo: "えびです", startYear: 2021, startMonth: 8, startDay: 21, completeYear: 2021, completeMonth: 8, completeDay: 23, status: 1, nextTask: nil, branchTask: nil, extendHistory: nil),
     TaskData(title: "21日からの予定２", memo: "えびです", startYear: 2021, startMonth: 8, startDay: 21, completeYear: 2021, completeMonth: 8, completeDay: 24, status: 2, nextTask: nil, branchTask: nil, extendHistory: nil),
     //延長つき
     TaskData(title: "22日からの予定", memo: "えびです", startYear: 2021, startMonth: 8, startDay: 22, completeYear: 2021, completeMonth: 8, completeDay: 25, status: 0, nextTask: nil, branchTask: [], extendHistory: [calendar.date(from: DateComponents(year: 2021, month: 8, day: 23))!, calendar.date(from: DateComponents(year: 2021, month: 8, day: 25))!]),
+    ],
+    [
     //分岐タスク付き
     TaskData(title: "21日からの予定", memo: "分岐タスクメモ", startYear: 2021, startMonth: 8, startDay: 21, completeYear: 2021, completeMonth: 8, completeDay: 23, status: 1, nextTask: nil, branchTask: branchTask, extendHistory: nil),
     branch,
-    TaskData(title: "継続タスク親", memo: "えびです", startYear: 2021, startMonth: 8, startDay: 21, completeYear: 2021, completeMonth: 8, completeDay: 22, status: 2, nextTask: nextTask, branchTask: nil, extendHistory: nil)
-    
+    TaskData(title: "継続タスク親", memo: "えびです", startYear: 2021, startMonth: 8, startDay: 21, completeYear: 2021, completeMonth: 8, completeDay: 22, status: 2, nextTask: nextTask, branchTask: nil, extendHistory: nil),
+        TaskData(title: "21日からの予定", memo: "えびです", startYear: 2021, startMonth: 8, startDay: 21, completeYear: 2021, completeMonth: 8, completeDay: 23, status: 1, nextTask: nil, branchTask: nil, extendHistory: nil),
+        TaskData(title: "21日からの予定", memo: "えびです", startYear: 2021, startMonth: 8, startDay: 21, completeYear: 2021, completeMonth: 8, completeDay: 23, status: 1, nextTask: nil, branchTask: nil, extendHistory: nil)
+    ]
 ]
 
 var positionInData = 2
@@ -97,7 +102,7 @@ class ViewController: UIViewController {
         // Do any additional setup after loading the view.
         
         //
-        branch.parentTask = taskDataArray[3]
+        branch.parentTask = taskDataArray[1][0]
         
         //セル同士の間隔を設定
         collectionViewFlowLayout.minimumLineSpacing = 0
@@ -157,9 +162,19 @@ class ViewController: UIViewController {
 }
 
 extension ViewController: UITableViewDataSource, UITableViewDelegate {
+    
+    func numberOfSections(in tableView: UITableView) -> Int {
+            return taskDataArray.count
+    }
+    /*
+    func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
+        return "FF"
+    }
+    */
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         //return data[0].count
-        return taskDataArray.count
+        return taskDataArray[section].count
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -177,16 +192,18 @@ extension ViewController: UITableViewDataSource, UITableViewDelegate {
         //cell.label4.text = data[tableView.tag][3][indexPath.row]
         
         //以前のaddViewを削除。以前のセルを再利用しているから削除できる？
-        if tableView.tag == 2 {
+        
+        /*if tableView.tag == 2 {
             print(cell.subviews.count)
-        }
+        }*/
+        
         cell.removeAllSubviews()
         //再生されたcellで前のPathが残っているから同じものが描画され続ける
         cell.path = UIBezierPath()
         cell.removeAllShapeLayers()
         
         cell.leftEndDate = calendar.date(byAdding: .day, value: (tableView.tag - 2) * 4, to: today)!
-        _ = cell.addTaskCell(taskData: taskDataArray[indexPath.row])
+        _ = cell.addTaskCell(taskData: taskDataArray[indexPath.section][indexPath.row])
         
         
         
@@ -217,7 +234,9 @@ extension ViewController: UICollectionViewDataSource, UICollectionViewDelegate,U
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "collectionViewCell", for: indexPath) as! CustomCVCell
         //DatasourceとDelegateに自クラスを設定
+        print("リロード前の高さ",cell.tableView.contentOffset.y)
         cell.setTableViewDataSourceDelegate(dataSourceDelegate: self, forRow: indexPath.row)
+        print("リロード後の高さ",cell.tableView.contentOffset.y)
         return cell
     }
     
@@ -247,7 +266,6 @@ extension ViewController {
         //次のコレクションセルのテーブルビューの中心に移動したら
         //右にスライド(左の画面に移動)
         //print("\(data[0][0][0]),\(data[1][0][0]),\(data[2][0][0]),\(data[3][0][0]),\(data[4][0][0])")
-        
         //スクロール時にNotificationCenterに通知を送る。scrollViewも送る。
         NotificationCenter.default.post(name: .scrollTableView, object: scrollView)
         
