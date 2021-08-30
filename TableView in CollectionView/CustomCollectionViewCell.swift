@@ -1,5 +1,5 @@
 //
-//  CustomCVCell.swift
+//  CustomCollectioinViewCell.swift
 //  TableView in CollectionView
 //
 //  Created by 山田純平 on 2021/08/13.
@@ -11,13 +11,13 @@ extension Notification.Name {
     static let scrollTableView = Notification.Name("scrollTableView")
 }
 
-class CustomCVCell: UICollectionViewCell {
+class CustomCollectionViewCell: UICollectionViewCell {
     @IBOutlet weak var tableView: UITableView!
     
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
-        let nib = UINib(nibName: "CustomTVCell", bundle: nil)
+        let nib = UINib(nibName: "CustomTableViewCell", bundle: nil)
         tableView.register(nib, forCellReuseIdentifier: "tableViewCell")
         
         //スクロール時に送られた通知を受け取り、receiveScrollNotificationを実行

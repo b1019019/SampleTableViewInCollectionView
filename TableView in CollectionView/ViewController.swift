@@ -7,29 +7,6 @@
 
 import UIKit
 
-class TaskData {
-    var title: String
-    var memo: String
-    var startDate: Date
-    var completeDate: Date
-    var status: Int//0：取組み中 1：完了 2：諦め
-    var nextTask: TaskData?
-    var branchTask: [TaskData]?
-    var parentTask: TaskData?
-    var extendHistory: [Date]?//延長前の完了予定日を格納していく
-    
-    init(title: String,memo: String,startYear: Int, startMonth: Int,startDay: Int,completeYear: Int,completeMonth: Int , completeDay: Int,status: Int,nextTask: TaskData?,branchTask: [TaskData]?,extendHistory: [Date]?){
-        self.title = title
-        self.memo = memo
-        self.startDate = calendar.date(from: DateComponents(year: startYear, month: startMonth, day: startDay))!
-        self.completeDate = calendar.date(from: DateComponents(year: completeYear, month: completeMonth, day: completeDay))!
-        self.status = status
-        self.nextTask = nextTask
-        self.branchTask = branchTask
-        self.extendHistory = extendHistory
-    }
-}
-
 let calendar = Calendar(identifier: .gregorian)
 
 var today = calendar.date(from: DateComponents(year: 2021, month: 8, day: 21))!
@@ -111,7 +88,7 @@ class ViewController: UIViewController {
         
         
         //nibNameはxibファイル名が入る
-        let nib = UINib(nibName: "CustomCVCell", bundle: nil)
+        let nib = UINib(nibName: "CustomCollectionViewCell", bundle: nil)
         //登録
         collectionView.register(nib, forCellWithReuseIdentifier: "collectionViewCell")
         
@@ -184,7 +161,7 @@ extension ViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         //register()引数のreusedIdentifier(テーブルビュー)ごとにreusequeが存在する。ここで各テーブルビューの情報は保存されるため、前のセルの情報が残る。
-        let cell = tableView.dequeueReusableCell(withIdentifier: "tableViewCell", for: indexPath) as! CustomTVCell
+        let cell = tableView.dequeueReusableCell(withIdentifier: "tableViewCell", for: indexPath) as! CustomTableViewCell
         
         //cell.label1.text = data[tableView.tag][0][indexPath.row]
         //cell.label2.text = data[tableView.tag][1][indexPath.row]
@@ -232,7 +209,7 @@ extension ViewController: UICollectionViewDataSource, UICollectionViewDelegate,U
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "collectionViewCell", for: indexPath) as! CustomCVCell
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "collectionViewCell", for: indexPath) as! CustomCollectionViewCell
         //DatasourceとDelegateに自クラスを設定
         print("リロード前の高さ",cell.tableView.contentOffset.y)
         cell.setTableViewDataSourceDelegate(dataSourceDelegate: self, forRow: indexPath.row)
