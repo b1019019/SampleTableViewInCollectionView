@@ -8,14 +8,14 @@
 import UIKit
 
 class TaskView: UIView {
-
+    
     /*
-    // Only override draw() if you perform custom drawing.
-    // An empty implementation adversely affects performance during animation.
-    override func draw(_ rect: CGRect) {
-        // Drawing code
-    }
-    */
+     // Only override draw() if you perform custom drawing.
+     // An empty implementation adversely affects performance during animation.
+     override func draw(_ rect: CGRect) {
+     // Drawing code
+     }
+     */
     var task: TaskData
     var path: UIBezierPath?
     
@@ -23,6 +23,14 @@ class TaskView: UIView {
         self.task = task
         self.path = path
         super.init(frame: frame)
+        
+        // タップジェスチャーを作成
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(tap(_:)))
+        // 1タップで反応するように設定
+        tapGesture.numberOfTapsRequired = 1
+        // ビューにジェスチャーを設定
+        self.addGestureRecognizer(tapGesture)
+        
     }
     
     required init?(coder: NSCoder) {
@@ -33,6 +41,12 @@ class TaskView: UIView {
         path?.addArc(withCenter: CGPoint(x: bounds.minX + 10, y: bounds.midY), radius: 2, startAngle: 0, endAngle: .pi * 2, clockwise: true)
         path?.move(to: CGPoint(x: bounds.minX + 10, y: bounds.midY))
         path?.addLine(to: CGPoint(x: bounds.minX, y: bounds.midY))
+    }
+    
+    func horizontalConnectRight() {
+        path?.addArc(withCenter: CGPoint(x: bounds.maxX - 10, y: bounds.midY), radius: 2, startAngle: 0, endAngle: .pi * 2, clockwise: true)
+        path?.move(to: CGPoint(x: bounds.maxX - 10, y: bounds.midY))
+        path?.addLine(to: CGPoint(x: bounds.maxX, y: bounds.midY))
     }
     
     func upConnect() {
@@ -60,20 +74,26 @@ class TaskView: UIView {
         path?.addLine(to: CGPoint(x: exGoal, y: bounds.midY))
     }
     
+    @objc func tap(_ gesture: UITapGestureRecognizer) {
+        print("addView tapped",task.title)
+    }
+    
+    
+    
     override func draw(_ rect: CGRect) {
         if let p = path {
             UIColor.gray.setStroke()
             p.lineWidth = 5.0
-                //print("draw",path)
+            //print("draw",path)
             p.stroke()
         }
-
+        
         /*let pa = UIBezierPath()
-        pa.move(to: CGPoint(x: rect.minX, y: rect.minY))
-        pa.addLine(to: CGPoint(x: rect.maxX, y: rect.maxY))
-        pa.lineWidth = 5.0
-        pa.stroke()
-        print(pa)*/
+         pa.move(to: CGPoint(x: rect.minX, y: rect.minY))
+         pa.addLine(to: CGPoint(x: rect.maxX, y: rect.maxY))
+         pa.lineWidth = 5.0
+         pa.stroke()
+         print(pa)*/
     }
     
     func cornerRadius(leftCornerRounded: Bool,rightCornerRounded: Bool) {
@@ -90,5 +110,5 @@ class TaskView: UIView {
         }
         
     }
-
+    
 }

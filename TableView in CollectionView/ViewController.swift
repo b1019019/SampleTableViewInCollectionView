@@ -7,19 +7,6 @@
 
 import UIKit
 
-struct MyDate {
-    var year: Int
-    var month: Int
-    var day: Int
-    init(year: Int,month: Int,day: Int) {
-        self.year = year
-        self.month = month
-        self.day = day
-    }
-}
-
-let calendar = Calendar(identifier: .gregorian)
-
 class TaskData {
     var title: String
     var memo: String
@@ -42,6 +29,11 @@ class TaskData {
         self.extendHistory = extendHistory
     }
 }
+
+let calendar = Calendar(identifier: .gregorian)
+
+var today = calendar.date(from: DateComponents(year: 2021, month: 8, day: 21))!
+
 var data = [
     [
         ["0つ目","1","1","1"],
@@ -75,18 +67,21 @@ var data = [
     ]
 ]
 
-var branch = TaskData(title: "延長", memo: "えびです", startYear: 2021, startMonth: 8, startDay: 23, completeYear: 2021, completeMonth: 8, completeDay: 30, status: 0, nextTask: nil, branchTask:nil, extendHistory: nil)
+var branch = TaskData(title: "延長", memo: "えびです", startYear: 2021, startMonth: 8, startDay: 25, completeYear: 2021, completeMonth: 8, completeDay: 30, status: 0, nextTask: nil, branchTask:nil, extendHistory: nil)
 
 var branchTask = [branch]
 
+var nextTask = TaskData(title: "継続タスク子供", memo: "えびです", startYear: 2021, startMonth: 8, startDay: 24, completeYear: 2021, completeMonth: 8, completeDay: 29, status: 2, nextTask: nil, branchTask: nil, extendHistory: nil)
+
 var taskDataArray: [TaskData] = [
     TaskData(title: "21日からの予定", memo: "えびです", startYear: 2021, startMonth: 8, startDay: 21, completeYear: 2021, completeMonth: 8, completeDay: 23, status: 1, nextTask: nil, branchTask: nil, extendHistory: nil),
-    TaskData(title: "21日からの予定２", memo: "えびです", startYear: 2021, startMonth: 8, startDay: 21, completeYear: 2021, completeMonth: 8, completeDay: 30, status: 2, nextTask: nil, branchTask: nil, extendHistory: nil),
+    TaskData(title: "21日からの予定２", memo: "えびです", startYear: 2021, startMonth: 8, startDay: 21, completeYear: 2021, completeMonth: 8, completeDay: 24, status: 2, nextTask: nil, branchTask: nil, extendHistory: nil),
     //延長つき
     TaskData(title: "22日からの予定", memo: "えびです", startYear: 2021, startMonth: 8, startDay: 22, completeYear: 2021, completeMonth: 8, completeDay: 25, status: 0, nextTask: nil, branchTask: [], extendHistory: [calendar.date(from: DateComponents(year: 2021, month: 8, day: 23))!, calendar.date(from: DateComponents(year: 2021, month: 8, day: 25))!]),
     //分岐タスク付き
     TaskData(title: "21日からの予定", memo: "分岐タスクメモ", startYear: 2021, startMonth: 8, startDay: 21, completeYear: 2021, completeMonth: 8, completeDay: 23, status: 1, nextTask: nil, branchTask: branchTask, extendHistory: nil),
-    branch
+    branch,
+    TaskData(title: "継続タスク親", memo: "えびです", startYear: 2021, startMonth: 8, startDay: 21, completeYear: 2021, completeMonth: 8, completeDay: 22, status: 2, nextTask: nextTask, branchTask: nil, extendHistory: nil)
     
 ]
 
@@ -140,6 +135,8 @@ class ViewController: UIViewController {
         ]
         data.removeFirst()
         data.append(addData)
+        //表示日を+4日
+        today = calendar.date(byAdding: .day, value: 4, to: today)!
     }
     
     //右に向かってスクロール(左にデータが増える)
@@ -153,6 +150,8 @@ class ViewController: UIViewController {
         ]
         data.removeLast()
         data.insert(addData, at: 0)
+        //表示日を-4日
+        today = calendar.date(byAdding: .day, value: -4, to: today)!
     }
     
 }
@@ -168,6 +167,8 @@ extension ViewController: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        
+        //register()引数のreusedIdentifier(テーブルビュー)ごとにreusequeが存在する。ここで各テーブルビューの情報は保存されるため、前のセルの情報が残る。
         let cell = tableView.dequeueReusableCell(withIdentifier: "tableViewCell", for: indexPath) as! CustomTVCell
         
         //cell.label1.text = data[tableView.tag][0][indexPath.row]
@@ -175,7 +176,22 @@ extension ViewController: UITableViewDataSource, UITableViewDelegate {
         //cell.label3.text = data[tableView.tag][2][indexPath.row]
         //cell.label4.text = data[tableView.tag][3][indexPath.row]
         
-        cell.addTaskCell(taskData: taskDataArray[indexPath.row])
+        //以前のaddViewを削除。以前のセルを再利用しているから削除できる？
+        if tableView.tag == 2 {
+            print(cell.subviews.count)
+        }
+        cell.removeAllSubviews()
+        //再生されたcellで前のPathが残っているから同じものが描画され続ける
+        cell.path = UIBezierPath()
+        cell.removeAllShapeLayers()
+        
+        cell.leftEndDate = calendar.date(byAdding: .day, value: (tableView.tag - 2) * 4, to: today)!
+        _ = cell.addTaskCell(taskData: taskDataArray[indexPath.row])
+        
+        
+        
+        //TVCで追加したTaskViewとShapeLayerを削除するために、参照を保存する必要がある。配列を作って、そこに保存し、参照ごと削除する作戦
+        
         //cell.test(row: indexPath.row)
         cell.label1.text = "表示"
         /*
@@ -195,7 +211,7 @@ extension ViewController: UITableViewDataSource, UITableViewDelegate {
 extension ViewController: UICollectionViewDataSource, UICollectionViewDelegate,UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return data.count
+        return 5
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {

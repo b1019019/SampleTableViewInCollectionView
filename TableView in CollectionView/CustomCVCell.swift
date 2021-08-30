@@ -47,6 +47,5 @@ class CustomCVCell: UICollectionViewCell {
         tableView.tag = row
         //tableViewのデリゲート、データソースの関数を実行させる
         tableView.reloadData()
-        
     }
 }

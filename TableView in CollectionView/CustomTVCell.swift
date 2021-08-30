@@ -26,6 +26,12 @@ class CustomTVCell: UITableViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
+        // タップジェスチャーを作成
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(tap(_:)))
+        // 1タップで反応するように設定
+        tapGesture.numberOfTapsRequired = 1
+        // ビューにジェスチャーを設定
+        self.addGestureRecognizer(tapGesture)
         
     }
     
@@ -35,68 +41,64 @@ class CustomTVCell: UITableViewCell {
         // Configure the view for the selected state
     }
     
-    func addTaskCell(taskData: TaskData) {
-        //shapeLayerの大きさ設定。awakeFromNib時に行うと、heightForRowAtのTVセルの大きさ設定が適用されていない。なのでshapeLayer.frameの大きさ設定がおかしくなる
+    func addTaskCell(taskData: TaskData) -> TaskView?{
+        //shapeLayerの大きさ設定
+        //awakeFromNib時に行うと、heightForRowAtのTVセルの大きさ設定が適用されていない。なのでshapeLayer.frameの大きさ設定がおかしくなる
         shapeLayer.frame = CGRect(x: 0, y: 0, width: frame.width, height: frame.height)
         
         //右端の日
         let rightEndDate = calendar.date(byAdding: .day, value: 3, to: leftEndDate!)!
-        //生成するタスクの幅
-        var taskWidth: CGFloat = 0
         //左と右を丸角にするかどうか
         var leftCornerRounded = false
         var rightCornerRounded = false
         
+        ////TaskViewの大きさ設定、startの設定、丸角の設定
         
-        
-        //左端の日から数えたタスクが始まる日
+        //左端日を基準としたタスクの開始日、完了日
         var start = 0
-        //タスクの全体を辿るためのインデックス
-        var indexDate = leftEndDate!
-        //タスクの開始日がテーブルに表示される期間内にあるか
-        if let l = leftEndDate {
-            if l <= taskData.startDate && taskData.startDate <= rightEndDate {
-                leftCornerRounded = true
-                //タスクが始まる日に合わせる
-                start = calendar.dateComponents([.day], from: l, to: taskData.startDate).day!
-                //タスクが始まる日に合わせる
-                indexDate = taskData.startDate
-                //タスクの開始日がテーブルに表示される期間より遅いか
+        var goal = 3
+        
+        if leftEndDate! <= taskData.startDate && taskData.startDate <= rightEndDate {
+            start = calendar.dateComponents([.day], from: leftEndDate!, to: taskData.startDate).day!
+            leftCornerRounded = true
+        } else if rightEndDate < taskData.startDate {
+            //addViewを描画せずに背景横線の描画を描画して終了。
+            if let parent = taskData.parentTask {
                 
-                //分岐タスクの子タスクが表示4日より未来の場合、ここでreturnされて横線を引けなくなる
-                
-            } else if rightEndDate < taskData.startDate {
-                return
+                if parent.startDate < leftEndDate! {
+                    horizontalDraw(startX: bounds.minX, goalX: bounds.maxX)
+                } else if leftEndDate! <= parent.startDate && parent.startDate <= rightEndDate {
+                    let gapParent = calendar.dateComponents([.day], from: leftEndDate!, to: parent.startDate).day!
+                    horizontalDrawFromTop(startX: 10 + CGFloat(gapParent) * self.bounds.width/4, goalX: bounds.maxX)
+                }
             }
+            shapeLayer.path = path.cgPath
+            shapeLayer.lineWidth = 5.0
+            //色塗らんと見えない
+            shapeLayer.strokeColor = UIColor.cyan.cgColor
+            
+            self.layer.addSublayer(shapeLayer)
+            
+            
+            return nil
+            
         }
         
-        //タスク終了まで幅の大きさを測る
-        for _ in start...3 {
-            if indexDate < taskData.completeDate {
-                taskWidth += self.frame.width/4
-            } else if indexDate == taskData.completeDate {
-                taskWidth += self.frame.width/4
-                rightCornerRounded = true
-                break
-            }
-            indexDate = calendar.date(byAdding: .day, value: 1, to: indexDate)!
+        if leftEndDate! <= taskData.completeDate && taskData.completeDate <= rightEndDate {
+            goal = calendar.dateComponents([.day], from: leftEndDate!, to: taskData.completeDate).day!
+            rightCornerRounded = true
+        } else if taskData.completeDate < leftEndDate! {
+            return nil
         }
         
-        ////ここまででやっていること：TaskViewの大きさ設定、startの設定、丸角の設定
+        let addViewPath = UIBezierPath()
+        let addView = TaskView(frame: CGRect(x: CGFloat(start) * (self.frame.width/4), y: 0, width: CGFloat(goal - start + 1) * self.frame.width/4, height: self.frame.height),task: taskData,path: addViewPath)
         
-        let addViewPath = UIBezierPath()//ベジエパスクラス
-        //UIViewを作り、挿入,親ビュー(CustomTVCell)のx,y座標を0としてRectを決める
-        let addView = TaskView(frame: CGRect(x: CGFloat(start) * (self.frame.width/4), y: CGFloat(0), width: taskWidth, height: self.frame.height),task: taskData,path: addViewPath)
-        
-        /*
-         path.move(to: CGPoint(x: CGFloat(1) * self.frame.width/4 - addView.frame.origin.x, y: addView.frame.midY))
-         path.addLine(to: CGPoint(x: CGFloat(2) * self.frame.width/4 - addView.frame.origin.x, y: addView.frame.midY))
-         */
+        ////
         
         
         
         let originX = addView.frame.origin.x
-        print("originX",originX)
         //2つ目のインデックス
         var indexDate2 = leftEndDate!
         indexDate2 = calendar.date(byAdding: .day, value: start, to: indexDate2)!
@@ -127,9 +129,7 @@ class CustomTVCell: UITableViewCell {
             addView.downConnect()
         }
         //自分が分岐の子だった場合
-        print(taskData.parentTask)
         if let parent = taskData.parentTask {
-            print("child")
             //親タスクの開始日が表示されている4日間より過去である場合
             if parent.startDate < leftEndDate! {
                 //子タスクの開始日が左端日だった場合
@@ -142,33 +142,37 @@ class CustomTVCell: UITableViewCell {
                     //addViewに丸と横点線を引く
                     addView.horizontalConnect()
                     
-                } else if rightEndDate < taskData.startDate {
-                    //TVC全てに点線を引く
-                    horizontalDraw(startX: bounds.minX, goalX: bounds.maxX)
                 }
                 //親タスクの開始日が表示されている4日間のどれかである場合
             } else if leftEndDate! <= parent.startDate && parent.startDate <= rightEndDate {
-                print("親タスクが4日以内")
+                let gapParent = calendar.dateComponents([.day], from: leftEndDate!, to: parent.startDate).day!
+                let gap = calendar.dateComponents([.day], from: leftEndDate!, to: taskData.startDate).day!
+                
                 if parent.startDate == taskData.startDate {
                     //addViewに縦線と丸を書く
                     addView.upConnect()
                 } else if parent.startDate < taskData.startDate && taskData.startDate <= rightEndDate {
-                    print("今回")
-                    let gapParent = calendar.dateComponents([.day], from: leftEndDate!, to: parent.startDate).day!
-                    let gap = calendar.dateComponents([.day], from: leftEndDate!, to: taskData.startDate).day!
-                    print(gapParent,gap)
                     
                     //TVCに直接描画
                     horizontalDrawFromTop(startX: 10 + CGFloat(gapParent) * self.bounds.width/4, goalX: CGFloat(gap) * self.bounds.width/4)
                     
                     //addViewに丸と横点線を引く
                     addView.horizontalConnect()
-                } else if parent.startDate < taskData.startDate && rightEndDate < taskData.startDate {
-                    print("fafa")
-                    horizontalDraw(startX: bounds.minX, goalX: bounds.maxX)
                 }
             }
             
+        }
+        
+        //継続タスクを表示
+        //継続タスクを所持していた場合
+        if let next = taskData.nextTask {
+            if let nextTaskView = addTaskCell(taskData: next){
+                nextTaskView.horizontalConnect()
+                addView.horizontalConnectRight()
+                horizontalDraw(startX: addView.frame.maxX, goalX: nextTaskView.frame.minX)
+            } else {
+                horizontalDraw(startX: addView.frame.maxX, goalX: bounds.maxX)
+            }
         }
         
         //角丸化
@@ -202,7 +206,7 @@ class CustomTVCell: UITableViewCell {
          //shapeLayer.backgroundColor = UIColor.black.cgColor
          layer.addSublayer(shapeLayer)
          */
-        
+        return addView
     }
     
     private func horizontalDraw(startX: CGFloat,goalX: CGFloat) {
@@ -214,6 +218,10 @@ class CustomTVCell: UITableViewCell {
         path.move(to: CGPoint(x: startX, y: bounds.minY))
         path.addLine(to: CGPoint(x: startX, y: bounds.midY))
         horizontalDraw(startX: startX, goalX: goalX)
+    }
+    
+    @objc func tap(_ gesture: UITapGestureRecognizer) {
+        print("TVC tapped",self.tag)
     }
     
     
@@ -231,6 +239,22 @@ class CustomTVCell: UITableViewCell {
         sl.lineWidth = 5.0
         sl.strokeColor = UIColor.cyan.cgColor
         layer.addSublayer(sl)
+    }
+    
+    func removeAllSubviews(){
+        let subviews = self.subviews
+        for subview in subviews {
+            subview.removeFromSuperview()
+        }
+    }
+    func removeAllShapeLayers() {
+        if let layers = self.layer.sublayers{
+            for layer in layers {
+                if let shapeLayer = layer as? CAShapeLayer {
+                    shapeLayer.removeFromSuperlayer()
+                }
+            }
+        }
     }
     
     override func draw(_ rect: CGRect) {
