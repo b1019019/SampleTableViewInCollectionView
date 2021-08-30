@@ -13,7 +13,7 @@ enum ViewControllerMaxDisplyedDays: Int {
     case max = 10
 }
 
-class ViewController: UIViewController {
+final class ViewController: UIViewController {
     @IBOutlet private weak var collectionView: UICollectionView! {
         didSet {
             let nib = UINib(nibName: "CustomCollectionViewCell", bundle: nil)
