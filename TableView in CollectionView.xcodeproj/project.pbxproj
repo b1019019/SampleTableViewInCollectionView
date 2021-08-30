@@ -19,6 +19,7 @@
 		3A059FC526C6C335005D67FC /* CustomTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3A059FC326C6C335005D67FC /* CustomTableViewCell.xib */; };
 		3A059FF126D3428B005D67FC /* TaskView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A059FF026D3428B005D67FC /* TaskView.swift */; };
 		7B58C76326DCFFF8008724B8 /* TaskData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B58C76226DCFFF8008724B8 /* TaskData.swift */; };
+		7B58C76526DD1544008724B8 /* UICollectionView+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B58C76426DD1544008724B8 /* UICollectionView+Extension.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -36,6 +37,7 @@
 		3A059FC326C6C335005D67FC /* CustomTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CustomTableViewCell.xib; sourceTree = "<group>"; };
 		3A059FF026D3428B005D67FC /* TaskView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskView.swift; sourceTree = "<group>"; };
 		7B58C76226DCFFF8008724B8 /* TaskData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskData.swift; sourceTree = "<group>"; };
+		7B58C76426DD1544008724B8 /* UICollectionView+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UICollectionView+Extension.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -71,6 +73,7 @@
 				3A059FAA26C6B831005D67FC /* AppDelegate.swift */,
 				3A059FAC26C6B831005D67FC /* SceneDelegate.swift */,
 				3A059FAE26C6B831005D67FC /* ViewController.swift */,
+				7B58C76626DD154B008724B8 /* Extension */,
 				7B58C76226DCFFF8008724B8 /* TaskData.swift */,
 				3A059FBE26C6BF31005D67FC /* CustomCollectionViewCell.swift */,
 				3A059FBF26C6BF31005D67FC /* CustomCollectionViewCell.xib */,
@@ -83,6 +86,14 @@
 				3A059FB826C6B832005D67FC /* Info.plist */,
 			);
 			path = "TableView in CollectionView";
+			sourceTree = "<group>";
+		};
+		7B58C76626DD154B008724B8 /* Extension */ = {
+			isa = PBXGroup;
+			children = (
+				7B58C76426DD1544008724B8 /* UICollectionView+Extension.swift */,
+			);
+			path = Extension;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -157,6 +168,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7B58C76526DD1544008724B8 /* UICollectionView+Extension.swift in Sources */,
 				3A059FC426C6C335005D67FC /* CustomTableViewCell.swift in Sources */,
 				3A059FAF26C6B831005D67FC /* ViewController.swift in Sources */,
 				3A059FC026C6BF31005D67FC /* CustomCollectionViewCell.swift in Sources */,

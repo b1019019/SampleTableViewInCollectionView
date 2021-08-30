@@ -41,6 +41,7 @@ class CustomTableViewCell: UITableViewCell {
         // Configure the view for the selected state
     }
     
+    @discardableResult
     func addTaskCell(taskData: TaskData) -> TaskView?{
         //shapeLayerの大きさ設定
         //awakeFromNib時に行うと、heightForRowAtのTVセルの大きさ設定が適用されていない。なのでshapeLayer.frameの大きさ設定がおかしくなる
