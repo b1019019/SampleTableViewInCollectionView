@@ -14,14 +14,14 @@ enum ViewControllerMaxDisplyedDays: Int {
 }
 
 class ViewController: UIViewController {
-    @IBOutlet weak var collectionView: UICollectionView! {
+    @IBOutlet private weak var collectionView: UICollectionView! {
         didSet {
-            collectionView.isPagingEnabled = true
             let nib = UINib(nibName: "CustomCollectionViewCell", bundle: nil)
             collectionView.register(nib, forCellWithReuseIdentifier: "collectionViewCell")
+            collectionView.isPagingEnabled = true
         }
     }
-    @IBOutlet weak var collectionViewFlowLayout: UICollectionViewFlowLayout! {
+    @IBOutlet private weak var collectionViewFlowLayout: UICollectionViewFlowLayout! {
         didSet {
             collectionViewFlowLayout.minimumLineSpacing = 0
         }
@@ -62,7 +62,7 @@ extension ViewController: UITableViewDataSource, UITableViewDelegate {
         //再生されたcellで前のPathが残っているから同じものが描画され続ける
         cell.path = UIBezierPath()
         cell.removeAllShapeLayers()
-        cell.leftEndDate = calendar.date(byAdding: .day, value: (tableView.tag - 2) * 4, to: today)!
+        cell.leftEndDate = calendar.date(byAdding: .day, value: (tableView.tag - 2) * maxDisplayedDays.rawValue, to: today)!
         cell.addTaskCell(taskData: taskDataArray[indexPath.section][indexPath.row])
         cell.label1.text = "表示"
         return cell
@@ -87,7 +87,7 @@ extension ViewController: UICollectionViewDataSource, UICollectionViewDelegate,U
 }
 
 extension ViewController {
-    enum Slide: Int {
+    private enum Slide: Int {
         case toLeft = 1
         case toRight = -1
         case nothing = 0
