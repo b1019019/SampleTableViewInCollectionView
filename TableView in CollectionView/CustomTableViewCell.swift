@@ -1,5 +1,5 @@
 //
-//  CustomTVCell.swift
+//  CustomTableViewCell.swift
 //  TableView in CollectionView
 //
 //  Created by 山田純平 on 2021/08/14.
@@ -7,7 +7,7 @@
 
 import UIKit
 
-class CustomTVCell: UITableViewCell {
+class CustomTableViewCell: UITableViewCell {
     
     @IBOutlet weak var devideView1: UIView!
     @IBOutlet weak var devideView2: UIView!
@@ -41,6 +41,7 @@ class CustomTVCell: UITableViewCell {
         // Configure the view for the selected state
     }
     
+    @discardableResult
     func addTaskCell(taskData: TaskData) -> TaskView?{
         //shapeLayerの大きさ設定
         //awakeFromNib時に行うと、heightForRowAtのTVセルの大きさ設定が適用されていない。なのでshapeLayer.frameの大きさ設定がおかしくなる
